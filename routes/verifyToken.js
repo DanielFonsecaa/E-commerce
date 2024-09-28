@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-const verifyToken = (req, res, next) => {
+export const verifyToken = (req, res, next) => {
   const authHeader = req.headers.token;
   if (!authHeader) {
     return res.status(401).json({ message: "No authenticated" });
@@ -13,7 +13,7 @@ const verifyToken = (req, res, next) => {
   });
 };
 
-export const verifyTokerAuthorization = (req, res, next) => {
+export const verifyTokenAuthorization = (req, res, next) => {
   verifyToken(req, res, () => {
     if (req.user.id === req.params.id || req.user.isAdmin) {
       next();
@@ -23,4 +23,12 @@ export const verifyTokerAuthorization = (req, res, next) => {
   });
 };
 
-export default verifyToken;
+export const verifyTokenAdmin = (req, res, next) => {
+  verifyToken(req, res, () => {
+    if (req.user.isAdmin) {
+      next();
+    } else {
+      return res.status(403).json({ message: "Unauthorized to do that" });
+    }
+  });
+};
