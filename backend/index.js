@@ -6,13 +6,13 @@ import auth from "./routes/auth.js";
 import product from "./routes/product.js";
 import cart from "./routes/cart.js";
 import order from "./routes/order.js";
-
-const app = express();
-const port = process.env.PORT || 3001;
-
-app.use(express.json());
+import cors from "cors";
 
 dotenv.config();
+const app = express();
+const port = process.env.PORT_NUMBER || 3000;
+app.use(cors());
+app.use(express.json());
 
 mongoose
   .connect(process.env.MONGO_URL)
