@@ -59,7 +59,7 @@ router.get("/find/:userid", verifyTokenAuthorization, async (req, res) => {
   }
 });
 
-//Get All Products
+//Get All carts
 
 router.get("/", verifyTokenAdmin, async (req, res) => {
   try {
