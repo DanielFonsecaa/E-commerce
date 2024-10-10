@@ -18,6 +18,7 @@ export const verifyTokenAuthorization = (req, res, next) => {
     if (req.user.id === req.params.id || req.user.isAdmin) {
       next();
     } else {
+      console.log(req.user.id, req.params.id);
       return res.status(403).json({ message: "Unauthorized to do that" });
     }
   });

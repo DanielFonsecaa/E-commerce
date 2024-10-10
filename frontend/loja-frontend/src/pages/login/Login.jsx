@@ -1,10 +1,12 @@
 // eslint-disable-next-line no-unused-vars
 import { useEffect, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,6 +31,8 @@ function Login() {
       const data = await response.json();
       localStorage.setItem("token", data.token);
       console.log("Login successful:", data);
+      navigate("/");
+      window.location.reload();
     } catch (err) {
       console.error("Error during login:", err.message);
       setError("Login failed. Please check your connection and try again.");
@@ -76,6 +80,7 @@ function Login() {
             <p>{error}</p>
           </div>
         </form>
+        <Link to="/register">Create Account</Link>
       </div>
     </div>
   );

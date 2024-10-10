@@ -11,17 +11,19 @@ const router = express.Router();
 
 router.post("/", verifyToken, async (req, res) => {
   const newCart = new Cart(req.body);
-
+  console.log(newCart);
   try {
     const savedCart = await newCart.save();
+    console.log("saved cart--", savedCart);
     res.status(201).json(savedCart);
   } catch (error) {
+    console.error("Create error:", error);
     res.status(400).json(error);
   }
 });
 
 ////Update
-router.put("/:id", verifyTokenAuthorization, async (req, res) => {
+router.put("/:id", verifyToken, async (req, res) => {
   try {
     const updateCart = await Cart.findByIdAndUpdate(
       req.params.id,
@@ -50,9 +52,11 @@ router.delete("/:id", verifyTokenAuthorization, async (req, res) => {
 });
 
 //Get user cart
-router.get("/find/:userid", verifyTokenAuthorization, async (req, res) => {
+router.get("/find/:id", verifyTokenAuthorization, async (req, res) => {
   try {
-    const cart = await Cart.findOne({ userId: req.params.userid });
+    const cart = await Cart.findOne({ userId: req.params.id }).populate(
+      "products.productsId"
+    );
     res.status(200).json(cart);
   } catch (error) {
     res.status(500).json(error);

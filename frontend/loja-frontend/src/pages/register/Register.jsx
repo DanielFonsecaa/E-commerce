@@ -1,10 +1,11 @@
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,6 +30,7 @@ function Register() {
 
       const data = await response.json();
       console.log("Login successful:", data);
+      navigate("/login");
     } catch (err) {
       console.error("Error during login:", err.message);
       setError("Login failed. Please check your connection and try again.");
