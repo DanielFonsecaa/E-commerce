@@ -40,16 +40,15 @@ function Login() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center h-[100vh]">
-      {/* Wrapper for Login and Form */}
-      <div className="relative flex flex-col items-center">
-        {/* Login title positioned on top-left of the form */}
-        <h2 className="absolute -top-8 left-2 text-2xl">Login</h2>
+    <div className="bg-[url('src/assets/caseBackground.jpg')] bg-no-repeat bg-cover bg-center pt-1 flex-grow flex items-center justify-center">
+      <div className="max-w-6xl backdrop-blur-md w-fit p-4 rounded-xl border-1  shadow-sm shadow-white">
+        <h1 className="uppercase tracking-widest font-extrabold text-4xl text-center  p-4">
+          Welcome back
+        </h1>
 
-        <form action="POST">
-          <div className="flex flex-col bg-gray-500 w-84 h-52 justify-center rounded-md">
-            <div className="flex flex-col px-24 py-4">
-              <h2 className="flex justify-start text-xl">Email</h2>
+        <div className="flex flex-col">
+          <form action="POST">
+            <div className="my-3">
               <input
                 type="email"
                 placeholder="email"
@@ -57,12 +56,10 @@ function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="flex outline-none rounded-sm p-1"
+                className="outline-none rounded-xl p-3 w-full"
               />
               <p>{email}</p>
-            </div>
-            <div className="flex flex-col px-24 pb-4">
-              <h2 className="text-xl">Password</h2>
+              <br />
               <input
                 type="text"
                 name="password"
@@ -70,17 +67,27 @@ function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="flex outline-none rounded-sm p-1"
+                className="outline-none rounded-xl p-3 w-full"
               />
               <p>{password}</p>
             </div>
-            <button onClick={handleSubmit} className="bg-white">
-              submit
+            <button
+              onClick={handleSubmit}
+              className="block m-auto bg-blue-700 px-6 py-2 rounded-xl text-white tracking-wider text-2xl mt-5"
+            >
+              Login
             </button>
-            <p>{error}</p>
-          </div>
-        </form>
-        <Link to="/register">Create Account</Link>
+            {error && (
+              <p className="bg-red-600 w-fit p-4 rounded-xl mt-5">{error}</p>
+            )}
+          </form>
+        </div>
+        <p className="mb-4 mt-8 text-center">
+          Still do not have an account?
+          <Link to="/register" className="px-4 font-bold">
+            Register
+          </Link>{" "}
+        </p>
       </div>
     </div>
   );

@@ -95,7 +95,7 @@ const BuyButton = ({ productId, price, color, title, img, model }) => {
               ? {
                   ...product,
                   quantity: product.quantity + 1,
-                  price: product.price + price,
+                  price: product.price,
                 }
               : product
           ),

@@ -1,15 +1,21 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(""); // Clear any previous errors
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
 
     try {
       const response = await fetch("http://localhost:3000/auth/register", {
@@ -33,21 +39,20 @@ function Register() {
       navigate("/login");
     } catch (err) {
       console.error("Error during login:", err.message);
-      setError("Login failed. Please check your connection and try again.");
+      setError("Register failed. Please check your connection and try again.");
     }
   };
 
   return (
-    <div className="flex flex-col justify-center items-center h-[100vh]">
-      {/* Wrapper for Login and Form */}
-      <div className="relative flex flex-col items-center">
-        {/* Login title positioned on top-left of the form */}
-        <h2 className="absolute -top-8 left-2 text-2xl">Register</h2>
+    <div className="bg-[url('src/assets/caseBackground.jpg')] bg-no-repeat bg-cover bg-center pt-1 flex-grow flex items-center justify-center">
+      <div className="max-w-6xl backdrop-blur-md w-fit p-4 rounded-xl border-1  shadow-sm shadow-white">
+        <h1 className="uppercase tracking-widest font-extrabold text-4xl text-center  p-4 min-w-80">
+          Sign up
+        </h1>
 
-        {/* Form container */}
-        <div className="flex flex-col bg-gray-500 w-84 h-52 justify-center rounded-md">
-          <div className="flex flex-col px-24 py-4">
-            <h2 className="flex justify-start text-xl">Username</h2>
+        <div className="flex flex-col my-3 gap-4">
+          <div>
+            <p className="pl-2 pb-1">Username</p>
             <input
               type="text"
               placeholder="username"
@@ -55,11 +60,11 @@ function Register() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              className="flex outline-none rounded-sm p-1"
+              className=" outline-none rounded-xl p-3 w-full"
             />
           </div>
-          <div className="flex flex-col px-24 py-4">
-            <h2 className="flex justify-start text-xl">Email</h2>
+          <div>
+            <p className="pl-2 pb-1">Email</p>
             <input
               type="email"
               placeholder="email"
@@ -67,11 +72,11 @@ function Register() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="flex outline-none rounded-sm p-1"
+              className="outline-none rounded-xl p-3 w-full"
             />
           </div>
-          <div className="flex flex-col px-24 pb-4">
-            <h2 className="text-xl">Password</h2>
+          <div>
+            <p className="pl-2 pb-1">Password</p>
             <input
               type="text"
               name="password"
@@ -79,12 +84,41 @@ function Register() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="flex outline-none rounded-sm p-1"
+              className="outline-none rounded-xl p-3 w-full"
             />
           </div>
-          <button onClick={handleSubmit}>Register</button>
-          <p>{error}</p>
+
+          <div>
+            <p className="pl-2 pb-1">Confirm Password</p>
+            <input
+              type="text"
+              name="password"
+              placeholder="*********"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              className="outline-none rounded-xl p-3 w-full"
+            />
+          </div>
+
+          <button
+            onClick={handleSubmit}
+            className="block m-auto bg-blue-700 px-6 py-2 rounded-xl text-white tracking-wider text-2xl mt-5"
+          >
+            Register
+          </button>
+          {error && (
+            <p className="bg-red-600 w-fit p-4 rounded-xl mt-2 m-auto">
+              {error}
+            </p>
+          )}
         </div>
+        <p className="mb-4 mt-4 text-center">
+          Already have an account?
+          <Link to="/login" className="px-4 font-bold">
+            Login
+          </Link>{" "}
+        </p>
       </div>
     </div>
   );
