@@ -41,12 +41,12 @@ function Login() {
 
   return (
     <div className="bg-[url('src/assets/caseBackground.jpg')] bg-no-repeat bg-cover bg-center pt-1 flex-grow flex items-center justify-center">
-      <div className="max-w-6xl backdrop-blur-md w-fit p-4 rounded-xl border-1  shadow-sm shadow-white">
+      <div className="max-w-6xl lg:backdrop-blur-lg w-fit p-4 rounded-xl border-1  shadow-sm shadow-white">
         <h1 className="uppercase tracking-widest font-extrabold text-4xl text-center  p-4">
           Welcome back
         </h1>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col ">
           <form action="POST">
             <div className="my-3">
               <input

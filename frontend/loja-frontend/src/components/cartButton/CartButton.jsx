@@ -5,7 +5,7 @@ function CartButton() {
   const [cart, setCart] = useState(null);
   const [userId, setUserId] = useState(null);
   const [token, setToken] = useState(null);
-  const [country, setCountry] = useState(null);
+  const [country, setCountry] = useState("");
 
   const countries = [
     "United States",
@@ -43,6 +43,7 @@ function CartButton() {
 
       const data = await response.json();
       if (response.ok) {
+        console.log(data.products);
         setCart(data);
       } else {
         console.error("Error fetching cart:", data);
@@ -71,58 +72,80 @@ function CartButton() {
 
   const distinctProductCount = cart?.products?.length || 0;
 
+  let subTotal = cart?.products?.reduce((total, product) => {
+    return total + product.price * product.quantity;
+  }, 0);
+
+  const shipping = 10; //change this to significant ammount
+  const discount = 5; //change this to significant ammount
+
+  const totalAmount = Math.max(subTotal + shipping - discount, 0);
+
   return (
-    <div className="relative mt-10 ml-20 mr-10">
-      <h1 className="capitalize text-3xl font-bold">shopping bag</h1>
-      <p>
-        <span className="font-bold pt-2">{distinctProductCount} items</span> in
-        your bag
-      </p>
+    <div className="m-10">
       {cart ? (
-        <div className="mt-4">
-          <div className="p-6 bg-gray-200 rounded-lg shadow-2xl max-w-5xl">
-            <table className="w-full table-fixed">
-              <thead>
-                <tr>
-                  <th className="w-1/2 text-start pb-3">Product</th>
-                  <th className="w-1/4 pb-3">Price</th>
-                  <th className="w-1/4 pb-3">Quantity</th>
-                  <th className="w-1/4 pb-3">Total Price</th>
-                </tr>
-              </thead>
-              <tbody>
-                {cart.products.map((product) => (
-                  <tr key={product._id}>
-                    <td className="w-1/2">
-                      <div className="flex items-center">
-                        <img
-                          src={product.img}
-                          alt={product.title}
-                          className="w-16 h-16 object-cover mr-4"
-                        />
-                        <div>
-                          <p>
-                            {product.title} {product.model}
-                          </p>
-                          <p className="text-gray-600">
-                            Color: {product.color}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="w-1/4 text-center">${product.price}</td>
-                    <td className="w-1/4 text-center">{product.quantity}</td>
-                    <td className="w-1/4 text-center">
-                      ${product.price * product.quantity}
-                    </td>
+        <div className="mt-4 flex justify-around gap-10 flex-grow flex-col lg:flex-row">
+          <div className="">
+            <div className="m-5">
+              <h1 className="capitalize text-3xl font-bold">shopping bag</h1>
+              <p>
+                <span className="font-bold pt-2">
+                  {distinctProductCount} items
+                </span>
+                &nbsp;in your bag
+              </p>
+            </div>
+            <div className="p-6 bg-gray-200 rounded-lg shadow-2xl max-w-6xl">
+              <table className="w-full table-fixed">
+                <thead>
+                  <tr>
+                    <th className="lg:tracking-wider w-1/2 text-start pb-3">
+                      Product
+                    </th>
+                    <th className="lg:tracking-wider w-1/4 pb-3">Price</th>
+                    <th className="lg:tracking-wider w-1/4 pb-3">Quantity</th>
+                    <th className="lg:tracking-wider w-1/4 pb-3">
+                      Total Price
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {cart.products.map((product) => (
+                    <tr key={product._id}>
+                      <td className="w-1/2">
+                        <div className="flex items-center flex-col lg:flex-row">
+                          <img
+                            src={product.img}
+                            alt={product.title}
+                            className="w-16 h-16 object-cover mr-4"
+                          />
+
+                          <div>
+                            <p>
+                              {product.title} {product.model}
+                            </p>
+                            <p className="text-gray-600">
+                              Color: {product.color}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="w-1/4 text-center">${product.price}</td>
+                      <td className="w-1/4 text-center">{product.quantity}</td>
+                      <td className="w-1/4 text-center">
+                        ${product.price * product.quantity}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-          <div className="max-w-60 absolute right-12 top-0 bg-gray-200 p-5">
+          <div className="bg-gray-200 p-5 rounded-lg lg:max-w-md ">
             <div className="">
-              <h2 className="font-bold text-xl pb-3">Calculated shipping</h2>
+              <h2 className="font-bold text-xl pb-3 text-center">
+                Calculated shipping
+              </h2>
               <label htmlFor="country" className="pb-3">
                 <select
                   name="country"
@@ -143,31 +166,48 @@ function CartButton() {
               </button>
             </div>
 
+            <hr className=" mt-9 mx-4 border-1 border-black" />
+
             <div className="mt-5">
-              <h2>Coupon code</h2>
-              <p>
+              <h2 className="font-bold text-xl pb-2 text-center">
+                Coupon code
+              </h2>
+              <p className="leading-loose text-gray-600 text-sm">
                 Lorem ipsum dolor sit, amet consectetur adipisicing elit.
                 Architecto dolores iure minima quae cupiditate ut!
               </p>
               <input
                 type="text"
                 name="coupon"
+                placeholder="Coupon"
                 id=""
-                className="outline-none p-2 w-3/4"
+                className="outline-none p-2 w-full rounded-lg mt-3"
               />
-              <button className="block p-3 bg-black text-white rounded-lg w-full ">
+              <button className="block p-3 my-5 bg-black text-white rounded-lg w-full ">
                 Claim
               </button>
             </div>
 
-            <div>
-              <h2>Cart total</h2>
+            <div className="bg-amber-400 rounded-lg p-3 mt-5">
+              <h2 className="font-bold text-xl pb-2 text-center">Cart total</h2>
               <ul>
-                <li>Subtotal: $1,000</li>
-                <li>Shipping: $100</li>
-                <li>Coupon discount: -$200</li>
-                <li>Total: $900</li>
+                <li className="flex justify-between">
+                  Subtotal: <span>${subTotal.toFixed(2)}</span>
+                </li>
+                <li className="flex justify-between">
+                  Shipping: <span>${shipping.toFixed(2)}</span>
+                </li>
+                <li className="flex justify-between">
+                  Discount: <span>${discount.toFixed(2)}</span>
+                </li>
+                <li className="flex justify-between font-bold text-xl">
+                  Total:{" "}
+                  <span className="text-2xl">${totalAmount.toFixed(2)}</span>
+                </li>
               </ul>
+              <button className="p-3 mt-2 bg-black text-white rounded-lg w-full ">
+                Buy
+              </button>
             </div>
           </div>
         </div>

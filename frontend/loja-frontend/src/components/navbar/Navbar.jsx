@@ -10,6 +10,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    console.log(token);
     if (token) {
       const decode = jwtDecode(token);
       console.log("token", decode);
