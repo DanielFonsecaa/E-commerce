@@ -30,16 +30,13 @@ function CartButton() {
     }
 
     try {
-      const response = await fetch(
-        `http://localhost:3000/cart/find/${userId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            token: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`http://localhost:3000/cart/${userId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          token: `Bearer ${token}`,
+        },
+      });
 
       const data = await response.json();
       if (response.ok) {

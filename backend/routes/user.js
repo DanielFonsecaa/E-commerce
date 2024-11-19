@@ -5,7 +5,323 @@ import CryptoJS from "crypto-js";
 
 const router = express.Router();
 
+//Get All Users
+
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: Get all users if you are the administrator
+ *     description: This will return all the users that already have been registered on the website.
+ *     tags:
+ *       - Users
+ *     responses:
+ *       200:
+ *         description: A list of users.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: The unique identifier for the user.
+ *                     example: 66f7db10ad8071b693995b36
+ *                   username:
+ *                     type: string
+ *                     description: The username of the user.
+ *                     example: admin
+ *                   email:
+ *                     type: string
+ *                     description: The user's email address.
+ *                     example: admin@admin.com
+ *                   password:
+ *                     type: string
+ *                     description: The hashed password of the user.
+ *                     example: U2FsdGVkX194rqhcBA0YAU6h1Mepsz96JIPupXi6/Bk=
+ *                   isAdmin:
+ *                     type: boolean
+ *                     description: Indicates if the user has administrative privileges.
+ *                     example: true
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                     description: The timestamp when the user was created.
+ *                     example: 2024-08-28T10:31:44.990Z
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *                     description: The timestamp when the user was last updated.
+ *                     example: 2024-09-28T10:31:44.990Z
+ *                   __v:
+ *                     type: number
+ *                     description: The version key for the document.
+ *                     example: 0
+ *       401:
+ *         description: You still dont have a token. Meaning you are not logged in.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message.
+ *                   example: No authenticated
+ *       403:
+ *         description: Unauthorized to do that. Probably you are not the administrator
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message.
+ *                   example: Invalid token
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message.
+ *                   example: Error fecthing all the users
+ */
+router.get("/", verifyTokenAdmin, async (req, res) => {
+  const query = req.query.new;
+  try {
+    const users = query
+      ? await User.find().sort({ _id: -1 }).limit(5)
+      : await User.find();
+
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: "Error fecthing all the users" });
+  }
+});
+
+//Get user
+
+/**
+ *
+ * @swagger
+ * /users/{id}:
+ *   get:
+ *     summary: Get specified user if you are the administrator
+ *     description: This will return the specific user
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The unique identifier of the user.
+ *         schema:
+ *           type: string
+ *           example: 66f7db10ad8071b693995b36
+ *     responses:
+ *       200:
+ *         description: Specific user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: The unique identifier for the user.
+ *                     example: 673cd7f2b01ef4a7e13c68be
+ *                   username:
+ *                     type: string
+ *                     description: The username of the user.
+ *                     example: daniel
+ *                   email:
+ *                     type: string
+ *                     description: The user's email address.
+ *                     example: daniel@daniel.com
+ *                   isAdmin:
+ *                     type: boolean
+ *                     description: Indicates if the user has administrative privileges.
+ *                     example: false
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                     description: The timestamp when the user was created.
+ *                     example: 2024-11-19T18:24:50.498Z
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *                     description: The timestamp when the user was last updated.
+ *                     example: 2024-11-19T18:25:50.498Z
+ *                   __v:
+ *                     type: number
+ *                     description: The version key for the document.
+ *                     example: 0
+ *       401:
+ *         description: You still dont have a token. Meaning you are not logged in.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message.
+ *                   example: No authenticated
+ *       403:
+ *         description: Unauthorized to do that. Probably you are not the administrator
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message.
+ *                   example: Invalid token
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message.
+ *                   example: Error fecthing the user
+ */
+router.get("/:id", verifyTokenAdmin, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    const { password, ...rest } = user._doc;
+    res.status(200).json(rest);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
 //Update
+
+/**
+ * @swagger
+ * /users/{id}:
+ *   put:
+ *     summary: Update a user
+ *     description: Updates the details of a specific user. Requires authentication and authorization.
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The unique identifier of the user to update.
+ *         schema:
+ *           type: string
+ *           example: 673d12ec2e7f2ee767f5e1c4
+ *       - in: body
+ *         name: user
+ *         required: true
+ *         description: The updated user data.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             username:
+ *               type: string
+ *               description: The new username of the user.
+ *               example: daniel
+ *             email:
+ *               type: string
+ *               description: The new email of the user.
+ *               example: adsadadasd@asds.com
+ *             password:
+ *               type: string
+ *               description: The new hashed password of the user.
+ *               example: U2FsdGVkX1+CQRrifj4mzSdaLfUQDgtMVnqfqAQLAVM=
+ *     responses:
+ *       200:
+ *         description: The updated user details.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: The unique identifier for the user.
+ *                   example: 673d12ec2e7f2ee767f5e1c4
+ *                 username:
+ *                   type: string
+ *                   description: The updated username of the user.
+ *                   example: daniel
+ *                 email:
+ *                   type: string
+ *                   description: The updated email of the user.
+ *                   example: adsadadasd@asds.com
+ *                 password:
+ *                   type: string
+ *                   description: The updated hashed password of the user.
+ *                   example: U2FsdGVkX1+CQRrifj4mzSdaLfUQDgtMVnqfqAQLAVM=
+ *                 isAdmin:
+ *                   type: boolean
+ *                   description: Indicates if the user has administrative privileges.
+ *                   example: false
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The timestamp when the user was created.
+ *                   example: 2024-11-19T22:36:28.996Z
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The timestamp when the user was last updated.
+ *                   example: 2024-11-19T22:39:18.998Z
+ *                 __v:
+ *                   type: number
+ *                   description: The version key for the document.
+ *                   example: 0
+ *       401:
+ *         description: You are not authenticated.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message.
+ *                   example: No authenticated
+ *       403:
+ *         description: You do not have permission to perform this action.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message.
+ *                   example: Invalid token
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message.
+ *                   example: Error updating the user
+ */
+
 router.put("/:id", verifyTokenAuthorization, async (req, res) => {
   try {
     if (req.body.password) {
@@ -32,65 +348,74 @@ router.put("/:id", verifyTokenAuthorization, async (req, res) => {
 
 //Delete
 
-router.delete("/:id", verifyTokenAuthorization, async (req, res) => {
+/**
+ * @swagger
+ * /users/{id}:
+ *   delete:
+ *     summary: Delete a user by ID if you are the user or the administrator
+ *     description: Allows an administrator or user to delete a user from the system by their unique ID.
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The unique identifier of the user to be deleted.
+ *         schema:
+ *           type: string
+ *           example: 66f7db10ad8071b693995b36
+ *     responses:
+ *       200:
+ *         description: Confirmation message indicating the user has been deleted.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Confirmation message.
+ *                   example: User has been successfully deleted.
+ *       401:
+ *         description: You still don't have a token. Meaning you are not logged in.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message.
+ *                   example: No authenticated
+ *       403:
+ *         description: Unauthorized to perform this action. Probably you are not the administrator.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message.
+ *                   example: Invalid token
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message.
+ *                   example: Error deleting the user
+ */
+router.delete("/del/:id", verifyTokenAuthorization, async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error deleting user" });
-  }
-});
-
-//Get user
-router.get("/find/:id", verifyTokenAdmin, async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
-    const { password, ...rest } = user._doc;
-    res.status(200).json(rest);
-  } catch (error) {
-    res.status(500).json(error);
-  }
-});
-
-//Get All User
-
-router.get("/", verifyTokenAdmin, async (req, res) => {
-  const query = req.query.new;
-  try {
-    const users = query
-      ? await User.find().sort({ _id: -1 }).limit(5)
-      : await User.find();
-
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ message: "Error deleting user" });
-  }
-});
-
-//Get user stats
-
-router.get("/stats", verifyTokenAdmin, async (req, res) => {
-  const date = new Date();
-  const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
-  try {
-    const data = await User.aggregate([
-      { $match: { createdAt: { $gte: lastYear } } },
-      {
-        $project: {
-          month: { $month: "$createdAt" },
-        },
-      },
-      {
-        $group: {
-          _id: "$month",
-          total: { $sum: 1 },
-        },
-      },
-    ]);
-    res.status(200).json(data);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "failed to get stats" });
   }
 });
 

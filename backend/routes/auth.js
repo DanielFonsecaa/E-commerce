@@ -6,6 +6,87 @@ import jwt from "jsonwebtoken";
 const router = express.Router();
 
 //Register
+/**
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     summary: Register the user
+ *     description: You will be register and can login
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 description: The username of the user.
+ *                 example: daniel
+ *               email:
+ *                 type: string
+ *                 description: The email of the user.
+ *                 example: adsadadasd@asds.com
+ *               password:
+ *                 type: string
+ *                 description: The password of the user.
+ *                 example: 1111
+ *     responses:
+ *       200:
+ *         description: Successful login
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 username:
+ *                   type: string
+ *                   description: The username of the user.
+ *                   example: daniel
+ *                 email:
+ *                   type: string
+ *                   description: The email of the user.
+ *                   example: adsadadasd@asds.com
+ *                 password:
+ *                   type: string
+ *                   description: The hashed password of the user.
+ *                   example: U2FsdGVkX194rqhcBA0YAU6h1Mepsz96JIPupXi6/Bk=
+ *                 isAdmin:
+ *                   type: boolean
+ *                   description: Indicates if the user has administrative privileges.
+ *                   example: false
+ *                 _id:
+ *                   type: string
+ *                   description: The unique identifier for the user.
+ *                   example: 673d12ec2e7f2ee767f5e1c4
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The timestamp when the user was created.
+ *                   example: 2024-11-19T22:36:28.996Z
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The timestamp when the user was last updated.
+ *                   example: 2024-11-19T22:36:28.996Z
+ *                 __v:
+ *                   type: number
+ *                   description: The version key for the document.
+ *                   example: 0
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message.
+ *                   example: Error registering
+ */
 router.post("/register", async (req, res) => {
   const newUser = new User({
     username: req.body.username,
@@ -25,7 +106,94 @@ router.post("/register", async (req, res) => {
 });
 
 //login
-
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Log in the user
+ *     description: You will be logged in
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: The email of the user.
+ *                 example: adsadadasd@asds.com
+ *               password:
+ *                 type: string
+ *                 description: The password of the user.
+ *                 example: 1111
+ *     responses:
+ *       200:
+ *         description: Successful login
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: The unique identifier for the user.
+ *                   example: 673d12ec2e7f2ee767f5e1c4
+ *                 username:
+ *                   type: string
+ *                   description: The username of the user.
+ *                   example: daniel
+ *                 email:
+ *                   type: string
+ *                   description: The email of the user.
+ *                   example: adsadadasd@asds.com
+ *                 isAdmin:
+ *                   type: boolean
+ *                   description: Indicates if the user has administrative privileges.
+ *                   example: false
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The timestamp when the user was created.
+ *                   example: 2024-11-19T22:36:28.996Z
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The timestamp when the user was last updated.
+ *                   example: 2024-11-19T22:36:28.996Z
+ *                 __v:
+ *                   type: number
+ *                   description: The version key for the document.
+ *                   example: 0
+ *                 token:
+ *                   type: string
+ *                   description: The token of the user containing their information.
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3M2QxMmVjMmU3ZjJlZTc2N2Y1ZTFjNCIsImlzQWRtaW4iOmZhbHNlLCJuYW1lIjoiZGFuaWVsIiwiZW1haWwiOiJkYW5pZWxAZGFuaWVsLmNvbSIsInBhc3N3b3JkIjoiVTJGc2RHVmtYMThIckFaYmNwNjU2VWlvdm9jdUMwN0FUTUhDbEtTNXZnWT0iLCJpYXQiOjE3MzIwNTU5MzIsImV4cCI6MTczMjE0MjMzMn0.oeoyI4MGIamsiBR_OlHt0vrZ79LmMtFsb_oMhDMnAzI
+ *       401:
+ *         description: You are not authorized.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message.
+ *                   example: Wrong credentials
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message.
+ *                   example: Error logging in
+ */
 router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
