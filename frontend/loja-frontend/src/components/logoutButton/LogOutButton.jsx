@@ -10,7 +10,12 @@ const LogOutButton = () => {
 
   return (
     <div>
-      <button onClick={handleLogout}>LogOut</button>
+      <button
+        onClick={handleLogout}
+        className="p-4 bg-black text-white rounded-lg  tracking-widest"
+      >
+        LogOut
+      </button>
     </div>
   );
 };

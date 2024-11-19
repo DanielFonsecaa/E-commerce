@@ -54,7 +54,7 @@ function Product() {
   }, [token, userId]);
 
   return (
-    <div>
+    <div className="h-screen">
       <div className="product-container">
         {products.map((product) => (
           <div key={product._id} className="product-card">

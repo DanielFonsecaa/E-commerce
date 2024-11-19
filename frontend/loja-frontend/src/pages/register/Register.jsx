@@ -44,7 +44,7 @@ function Register() {
   };
 
   return (
-    <div className="bg-[url('src/assets/caseBackground.jpg')] bg-no-repeat bg-cover bg-center pt-1 flex-grow flex items-center justify-center">
+    <div className="bg-[url('src/assets/caseBackground.jpg')] bg-no-repeat bg-cover bg-center pt-1 flex-grow flex items-center justify-center h-screen">
       <div className="max-w-6xl lg:backdrop-blur-lg w-fit p-4 rounded-xl border-1  shadow-sm shadow-white">
         <h1 className="uppercase tracking-widest font-extrabold text-4xl text-center  p-4 min-w-80">
           Sign up

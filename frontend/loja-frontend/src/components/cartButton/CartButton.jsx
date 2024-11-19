@@ -82,7 +82,7 @@ function CartButton() {
   const totalAmount = Math.max(subTotal + shipping - discount, 0);
 
   return (
-    <div className="m-10">
+    <div className="m-10 h-screen">
       {cart ? (
         <div className="mt-4 flex justify-around gap-10 flex-grow flex-col lg:flex-row">
           <div className="">

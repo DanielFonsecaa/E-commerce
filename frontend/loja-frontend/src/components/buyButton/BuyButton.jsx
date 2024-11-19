@@ -139,6 +139,7 @@ const BuyButton = ({ productId, price, color, title, img, model }) => {
         console.error("Error creating cart:", error);
       }
     }
+    window.location.reload();
   }
 
   return (
