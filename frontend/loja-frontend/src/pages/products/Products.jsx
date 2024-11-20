@@ -17,7 +17,7 @@ function Product() {
 
   const fetchUserCartAgain = async () => {
     if (!userId || !token) return; // Ensure user is authenticated
-
+    console.log("fetchUserCartAgain ------------------");
     try {
       await fetch(`http://localhost:3000/cart/find/${userId}`, {
         headers: {

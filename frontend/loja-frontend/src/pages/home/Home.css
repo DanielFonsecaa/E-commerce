@@ -7,26 +7,3 @@
 * {
   font-family: "Kanit";
 }
-.product-container {
-  max-width: 300px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #000;
-  border-radius: 5px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  align-items: center;
-}
-.product-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background-color: white;
-}
-.buy-product {
-  background-color: blue;
-  width: 50px;
-  border-radius: 10px;
-}

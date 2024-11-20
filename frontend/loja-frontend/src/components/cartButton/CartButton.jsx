@@ -1,27 +1,45 @@
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import "./cartButton.css";
 function CartButton() {
   const [cart, setCart] = useState(null);
   const [userId, setUserId] = useState(null);
   const [token, setToken] = useState(null);
   const [country, setCountry] = useState("");
+  const [shippingFee, setShippingFee] = useState(0.0);
+
+  const [coupon, setCoupon] = useState(""); //....................................................
+  const [discount, setDiscount] = useState(0);
+
+  const handleCoupon = (e) => {
+    console.log("HAHAHAHAHAHAHAHH", e.target.value);
+    e.preventDefault();
+    if (coupon === "danilindo") {
+      setDiscount(subTotal / 10);
+    }
+  };
 
   const countries = [
-    "United States",
-    "Canada",
-    "United Kingdom",
-    "Australia",
-    "Germany",
-    "India",
-    "Japan",
-    "Brazil",
-    "China",
-    "South Africa",
+    { name: "United States", shippingFee: 15.0 },
+    { name: "Canada", shippingFee: 12.5 },
+    { name: "United Kingdom", shippingFee: 20.0 },
+    { name: "Australia", shippingFee: 18.75 },
+    { name: "Germany", shippingFee: 16.3 },
+    { name: "India", shippingFee: 10.0 },
+    { name: "Japan", shippingFee: 22.0 },
+    { name: "Brazil", shippingFee: 14.8 },
+    { name: "China", shippingFee: 13.5 },
+    { name: "South Africa", shippingFee: 17.0 },
   ];
-
   const handleSelectCountry = (e) => {
-    setCountry(e.target.value);
+    const selectedCountryName = e.target.value;
+    setCountry(selectedCountryName);
+
+    const countryShipping = countries.find(
+      (country) => country.name === selectedCountryName
+    );
+    if (countryShipping) {
+      setShippingFee(countryShipping.shippingFee);
+    }
   };
   const fetchCart = async () => {
     if (!userId || !token) {
@@ -73,10 +91,7 @@ function CartButton() {
     return total + product.price * product.quantity;
   }, 0);
 
-  const shipping = 10; //change this to significant ammount
-  const discount = 5; //change this to significant ammount
-
-  const totalAmount = Math.max(subTotal + shipping - discount, 0);
+  const totalAmount = Math.max(subTotal + shippingFee - discount, 0);
 
   return (
     <div className="m-10 h-screen">
@@ -139,31 +154,31 @@ function CartButton() {
             </div>
           </div>
           <div className="bg-gray-200 p-5 rounded-lg lg:max-w-md ">
-            <div className="">
+            <div className="flex gap-3 flex-col">
               <h2 className="font-bold text-xl pb-3 text-center">
                 Calculated shipping
               </h2>
-              <label htmlFor="country" className="pb-3">
+              <label htmlFor="country">
                 <select
                   name="country"
                   id=""
                   onChange={handleSelectCountry}
                   value={country}
-                  className="rounded-t-lg px-5 py-2 bg-black text-white w-full mb-3"
+                  className="rounded-t-lg px-5 py-2 bg-black text-white w-full"
                 >
+                  <option value="" disabled>
+                    Select a country
+                  </option>
                   {countries.map((country) => (
-                    <option key={country} value={country}>
-                      {country}
+                    <option key={country.name} value={country.name}>
+                      {country.name}
                     </option>
                   ))}
                 </select>
               </label>
-              <button className="block p-3 bg-black text-white rounded-lg w-full ">
-                Update
-              </button>
             </div>
 
-            <hr className=" mt-9 mx-4 border-1 border-black" />
+            <hr className=" mt-5 mx-4 border-1 border-black" />
 
             <div className="mt-5">
               <h2 className="font-bold text-xl pb-2 text-center">
@@ -177,10 +192,15 @@ function CartButton() {
                 type="text"
                 name="coupon"
                 placeholder="Coupon"
+                value={coupon}
+                onChange={(e) => setCoupon(e.target.value)}
                 id=""
                 className="outline-none p-2 w-full rounded-lg mt-3"
               />
-              <button className="block p-3 my-5 bg-black text-white rounded-lg w-full ">
+              <button
+                onClick={handleCoupon}
+                className="block p-3 my-5 bg-black text-white rounded-lg w-full "
+              >
                 Claim
               </button>
             </div>
@@ -192,7 +212,7 @@ function CartButton() {
                   Subtotal: <span>${subTotal.toFixed(2)}</span>
                 </li>
                 <li className="flex justify-between">
-                  Shipping: <span>${shipping.toFixed(2)}</span>
+                  Shipping: <span>${shippingFee.toFixed(2)}</span>
                 </li>
                 <li className="flex justify-between">
                   Discount: <span>${discount.toFixed(2)}</span>

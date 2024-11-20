@@ -8,7 +8,6 @@ const Profile = () => {
   const [password, setPassword] = useState("");
   const [id, setId] = useState("");
   const [error, setError] = useState("");
-
   const [isChecked, setIsChecked] = useState(false);
 
   const handleToggle = () => {
@@ -103,9 +102,11 @@ const Profile = () => {
         <img
           src="https://picsum.photos/400"
           alt="profile picture"
-          className="m-auto rounded-full w-32 mb-16"
+          className=" rounded-full w-32 mb-16 m-auto"
         />
+
         <div className="max-w-3xl m-auto">
+          <div className="flex justify-end"></div>
           <div className="flex items-center justify-end mb-10">
             <input
               className={`mr-2 mt-[0.3rem] h-3.5 w-8 appearance-none rounded-[0.4375rem] 

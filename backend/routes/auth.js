@@ -11,7 +11,7 @@ const router = express.Router();
  * /auth/register:
  *   post:
  *     summary: Register the user
- *     description: You will be register and can login
+ *     description: Register a new user to be able to log in.
  *     tags:
  *       - Authentication
  *     requestBody:
@@ -27,7 +27,7 @@ const router = express.Router();
  *                 example: daniel
  *               email:
  *                 type: string
- *                 description: The email of the user.
+ *                 description: The email address of the user.
  *                 example: adsadadasd@asds.com
  *               password:
  *                 type: string
@@ -35,7 +35,7 @@ const router = express.Router();
  *                 example: 1111
  *     responses:
  *       200:
- *         description: Successful login
+ *         description: Successful registration
  *         content:
  *           application/json:
  *             schema:
@@ -47,7 +47,7 @@ const router = express.Router();
  *                   example: daniel
  *                 email:
  *                   type: string
- *                   description: The email of the user.
+ *                   description: The email address of the user.
  *                   example: adsadadasd@asds.com
  *                 password:
  *                   type: string
@@ -85,8 +85,9 @@ const router = express.Router();
  *                 message:
  *                   type: string
  *                   description: Error message.
- *                   example: Error registering
+ *                   example: Error registering user
  */
+
 router.post("/register", async (req, res) => {
   const newUser = new User({
     username: req.body.username,
@@ -111,7 +112,7 @@ router.post("/register", async (req, res) => {
  * /auth/login:
  *   post:
  *     summary: Log in the user
- *     description: You will be logged in
+ *     description: Logs the user in and returns a token if the credentials are correct.
  *     tags:
  *       - Authentication
  *     requestBody:
@@ -123,7 +124,7 @@ router.post("/register", async (req, res) => {
  *             properties:
  *               email:
  *                 type: string
- *                 description: The email of the user.
+ *                 description: The email address of the user.
  *                 example: adsadadasd@asds.com
  *               password:
  *                 type: string
@@ -131,7 +132,7 @@ router.post("/register", async (req, res) => {
  *                 example: 1111
  *     responses:
  *       200:
- *         description: Successful login
+ *         description: Successful login, returns a user object with a token
  *         content:
  *           application/json:
  *             schema:
@@ -147,7 +148,7 @@ router.post("/register", async (req, res) => {
  *                   example: daniel
  *                 email:
  *                   type: string
- *                   description: The email of the user.
+ *                   description: The email address of the user.
  *                   example: adsadadasd@asds.com
  *                 isAdmin:
  *                   type: boolean
@@ -169,10 +170,10 @@ router.post("/register", async (req, res) => {
  *                   example: 0
  *                 token:
  *                   type: string
- *                   description: The token of the user containing their information.
+ *                   description: A token containing the user's information and permissions.
  *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3M2QxMmVjMmU3ZjJlZTc2N2Y1ZTFjNCIsImlzQWRtaW4iOmZhbHNlLCJuYW1lIjoiZGFuaWVsIiwiZW1haWwiOiJkYW5pZWxAZGFuaWVsLmNvbSIsInBhc3N3b3JkIjoiVTJGc2RHVmtYMThIckFaYmNwNjU2VWlvdm9jdUMwN0FUTUhDbEtTNXZnWT0iLCJpYXQiOjE3MzIwNTU5MzIsImV4cCI6MTczMjE0MjMzMn0.oeoyI4MGIamsiBR_OlHt0vrZ79LmMtFsb_oMhDMnAzI
  *       401:
- *         description: You are not authorized.
+ *         description: Unauthorized - incorrect credentials.
  *         content:
  *           application/json:
  *             schema:
@@ -181,7 +182,7 @@ router.post("/register", async (req, res) => {
  *                 message:
  *                   type: string
  *                   description: Error message.
- *                   example: Wrong credentials
+ *                   example: Incorrect credentials
  *       500:
  *         description: Internal server error.
  *         content:
@@ -194,6 +195,7 @@ router.post("/register", async (req, res) => {
  *                   description: Error message.
  *                   example: Error logging in
  */
+
 router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });

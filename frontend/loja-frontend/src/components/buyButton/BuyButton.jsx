@@ -19,14 +19,11 @@ const BuyButton = ({ productId, price, color, title, img, model }) => {
       if (!userId || !token) return; // Ensure user is authenticated
 
       try {
-        const response = await fetch(
-          `http://localhost:3000/cart/find/${userId}`,
-          {
-            headers: {
-              token: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await fetch(`http://localhost:3000/cart/${userId}`, {
+          headers: {
+            token: `Bearer ${token}`,
+          },
+        });
         if (response.ok) {
           const cart = await response.json();
           setUserCart(cart);
@@ -139,6 +136,7 @@ const BuyButton = ({ productId, price, color, title, img, model }) => {
         console.error("Error creating cart:", error);
       }
     }
+    window.location.reload();
   }
 
   return (

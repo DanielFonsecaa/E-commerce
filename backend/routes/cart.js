@@ -18,9 +18,55 @@ const router = express.Router();
  *     description: This will create a shopping cart for the user with all the products he wants to buy
  *     tags:
  *       - Shopping cart
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 description: The id of the user.
+ *                 example: 673cd7f2b01ef4a7e13c68be
  *     responses:
  *       201:
  *         description: Confirmation message indicating the cart has bem created.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   userId:
+ *                     type: string
+ *                     description: The unique identifier for the user.
+ *                     example: 673cd7f2b01ef4a7e13c68be
+ *                   _id:
+ *                     type: string
+ *                     description: The unique identifier for the cart.
+ *                     example: 673cd7f2b01ef4a7e13c68be
+ *                   products:
+ *                     type: array
+ *                     description: The produtcs that the user want to buy.
+ *                     example: []
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                     description: The timestamp when the user was created.
+ *                     example: 2024-11-19T18:24:50.498Z
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *                     description: The timestamp when the user was last updated.
+ *                     example: 2024-11-19T18:25:50.498Z
+ *                   __v:
+ *                     type: number
+ *                     description: The version key for the document.
+ *                     example: 0
+ *       401:
+ *         description: You still don't have a token. Meaning you are not logged in.
  *         content:
  *           application/json:
  *             schema:
@@ -28,8 +74,19 @@ const router = express.Router();
  *               properties:
  *                 message:
  *                   type: string
- *                   description: Confirmation message.
- *                   example: cart was successfully created.
+ *                   description: Error message.
+ *                   example: No authenticated
+ *       403:
+ *         description: Unauthorized to perform this action. Probably you are not the administrator.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message.
+ *                   example: Invalid token
  *       500:
  *         description: Internal server error.
  *         content:
@@ -57,46 +114,6 @@ router.post("/", verifyToken, async (req, res) => {
 
 ////Update
 
-/**
- * @swagger
- * /cart/{id}:
- *   delete:
- *     summary: Update the shopping cart of the user
- *     description: This will Update the shopping cart of the user.
- *     tags:
- *       - Shopping cart
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: The unique identifier of the cart to be Updated.
- *         schema:
- *           type: string
- *           example: 66f7db10ad8071b693995b36
- *     responses:
- *       200:
- *         description: Confirmation message indicating the cart has bem Updated.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: Confirmation message.
- *                   example: cart was successfully Updated.
- *       500:
- *         description: Internal server error.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: Error message.
- *                   example: Error updating cart
- */
 router.put("/:id", verifyToken, async (req, res) => {
   try {
     const updateCart = await Cart.findByIdAndUpdate(

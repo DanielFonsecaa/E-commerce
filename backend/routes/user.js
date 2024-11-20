@@ -11,8 +11,8 @@ const router = express.Router();
  * @swagger
  * /users:
  *   get:
- *     summary: Get all users if you are the administrator
- *     description: This will return all the users that already have been registered on the website.
+ *     summary: Get all users if you are an administrator
+ *     description: This will return all the users who have already been registered on the website.
  *     tags:
  *       - Users
  *     responses:
@@ -60,7 +60,7 @@ const router = express.Router();
  *                     description: The version key for the document.
  *                     example: 0
  *       401:
- *         description: You still dont have a token. Meaning you are not logged in.
+ *         description: You do not have a token, meaning you are not logged in.
  *         content:
  *           application/json:
  *             schema:
@@ -69,9 +69,9 @@ const router = express.Router();
  *                 message:
  *                   type: string
  *                   description: Error message.
- *                   example: No authenticated
+ *                   example: Not authenticated
  *       403:
- *         description: Unauthorized to do that. Probably you are not the administrator
+ *         description: Unauthorized action. You are likely not an administrator.
  *         content:
  *           application/json:
  *             schema:
@@ -91,8 +91,9 @@ const router = express.Router();
  *                 message:
  *                   type: string
  *                   description: Error message.
- *                   example: Error fecthing all the users
+ *                   example: Error fetching all users
  */
+
 router.get("/", verifyTokenAdmin, async (req, res) => {
   const query = req.query.new;
   try {
@@ -113,8 +114,8 @@ router.get("/", verifyTokenAdmin, async (req, res) => {
  * @swagger
  * /users/{id}:
  *   get:
- *     summary: Get specified user if you are the administrator
- *     description: This will return the specific user
+ *     summary: Get specified user if you are an administrator
+ *     description: This will return the specific user if the requester is an administrator.
  *     tags:
  *       - Users
  *     parameters:
@@ -127,46 +128,44 @@ router.get("/", verifyTokenAdmin, async (req, res) => {
  *           example: 66f7db10ad8071b693995b36
  *     responses:
  *       200:
- *         description: Specific user.
+ *         description: Specific user details.
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   _id:
- *                     type: string
- *                     description: The unique identifier for the user.
- *                     example: 673cd7f2b01ef4a7e13c68be
- *                   username:
- *                     type: string
- *                     description: The username of the user.
- *                     example: daniel
- *                   email:
- *                     type: string
- *                     description: The user's email address.
- *                     example: daniel@daniel.com
- *                   isAdmin:
- *                     type: boolean
- *                     description: Indicates if the user has administrative privileges.
- *                     example: false
- *                   createdAt:
- *                     type: string
- *                     format: date-time
- *                     description: The timestamp when the user was created.
- *                     example: 2024-11-19T18:24:50.498Z
- *                   updatedAt:
- *                     type: string
- *                     format: date-time
- *                     description: The timestamp when the user was last updated.
- *                     example: 2024-11-19T18:25:50.498Z
- *                   __v:
- *                     type: number
- *                     description: The version key for the document.
- *                     example: 0
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: The unique identifier for the user.
+ *                   example: 673cd7f2b01ef4a7e13c68be
+ *                 username:
+ *                   type: string
+ *                   description: The username of the user.
+ *                   example: daniel
+ *                 email:
+ *                   type: string
+ *                   description: The user's email address.
+ *                   example: daniel@daniel.com
+ *                 isAdmin:
+ *                   type: boolean
+ *                   description: Indicates if the user has administrative privileges.
+ *                   example: false
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The timestamp when the user was created.
+ *                   example: 2024-11-19T18:24:50.498Z
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The timestamp when the user was last updated.
+ *                   example: 2024-11-19T18:25:50.498Z
+ *                 __v:
+ *                   type: number
+ *                   description: The version key for the document.
+ *                   example: 0
  *       401:
- *         description: You still dont have a token. Meaning you are not logged in.
+ *         description: You do not have a token. You are not logged in.
  *         content:
  *           application/json:
  *             schema:
@@ -175,9 +174,9 @@ router.get("/", verifyTokenAdmin, async (req, res) => {
  *                 message:
  *                   type: string
  *                   description: Error message.
- *                   example: No authenticated
+ *                   example: Not authenticated
  *       403:
- *         description: Unauthorized to do that. Probably you are not the administrator
+ *         description: Unauthorized action. You are likely not an administrator.
  *         content:
  *           application/json:
  *             schema:
@@ -197,8 +196,9 @@ router.get("/", verifyTokenAdmin, async (req, res) => {
  *                 message:
  *                   type: string
  *                   description: Error message.
- *                   example: Error fecthing the user
+ *                   example: Error fetching the user
  */
+
 router.get("/:id", verifyTokenAdmin, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -271,7 +271,7 @@ router.get("/:id", verifyTokenAdmin, async (req, res) => {
  *                   example: U2FsdGVkX1+CQRrifj4mzSdaLfUQDgtMVnqfqAQLAVM=
  *                 isAdmin:
  *                   type: boolean
- *                   description: Indicates if the user has administrative privileges.
+ *                   description: Indicates whether the user has administrative privileges.
  *                   example: false
  *                 createdAt:
  *                   type: string
@@ -297,7 +297,7 @@ router.get("/:id", verifyTokenAdmin, async (req, res) => {
  *                 message:
  *                   type: string
  *                   description: Error message.
- *                   example: No authenticated
+ *                   example: Not authenticated
  *       403:
  *         description: You do not have permission to perform this action.
  *         content:
@@ -352,8 +352,8 @@ router.put("/:id", verifyTokenAuthorization, async (req, res) => {
  * @swagger
  * /users/{id}:
  *   delete:
- *     summary: Delete a user by ID if you are the user or the administrator
- *     description: Allows an administrator or user to delete a user from the system by their unique ID.
+ *     summary: Delete a user by ID if you are the user or an administrator
+ *     description: Allows an administrator or the user to delete the user from the system by their unique ID.
  *     tags:
  *       - Users
  *     parameters:
@@ -366,7 +366,7 @@ router.put("/:id", verifyTokenAuthorization, async (req, res) => {
  *           example: 66f7db10ad8071b693995b36
  *     responses:
  *       200:
- *         description: Confirmation message indicating the user has been deleted.
+ *         description: Confirmation message indicating that the user has been deleted.
  *         content:
  *           application/json:
  *             schema:
@@ -377,7 +377,7 @@ router.put("/:id", verifyTokenAuthorization, async (req, res) => {
  *                   description: Confirmation message.
  *                   example: User has been successfully deleted.
  *       401:
- *         description: You still don't have a token. Meaning you are not logged in.
+ *         description: You are not logged in (no token provided).
  *         content:
  *           application/json:
  *             schema:
@@ -386,9 +386,9 @@ router.put("/:id", verifyTokenAuthorization, async (req, res) => {
  *                 message:
  *                   type: string
  *                   description: Error message.
- *                   example: No authenticated
+ *                   example: No authentication token provided.
  *       403:
- *         description: Unauthorized to perform this action. Probably you are not the administrator.
+ *         description: Unauthorized to perform this action. You are probably not an administrator.
  *         content:
  *           application/json:
  *             schema:
@@ -397,7 +397,7 @@ router.put("/:id", verifyTokenAuthorization, async (req, res) => {
  *                 message:
  *                   type: string
  *                   description: Error message.
- *                   example: Invalid token
+ *                   example: Invalid token.
  *       500:
  *         description: Internal server error.
  *         content:
@@ -408,8 +408,9 @@ router.put("/:id", verifyTokenAuthorization, async (req, res) => {
  *                 message:
  *                   type: string
  *                   description: Error message.
- *                   example: Error deleting the user
+ *                   example: Error deleting the user.
  */
+
 router.delete("/del/:id", verifyTokenAuthorization, async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
