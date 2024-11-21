@@ -11,10 +11,10 @@ function CartButton() {
   const [discount, setDiscount] = useState(0);
 
   const handleCoupon = (e) => {
-    console.log("HAHAHAHAHAHAHAHH", e.target.value);
     e.preventDefault();
     if (coupon === "danilindo") {
       setDiscount(subTotal / 10);
+      console.log("this is the amount of the coupon", discount);
     }
   };
 
@@ -42,10 +42,7 @@ function CartButton() {
     }
   };
   const fetchCart = async () => {
-    if (!userId || !token) {
-      console.error("User ID or token is not available.");
-      return;
-    }
+    if (!userId || !token) return;
 
     try {
       const response = await fetch(`http://localhost:3000/cart/${userId}`, {
@@ -58,7 +55,6 @@ function CartButton() {
 
       const data = await response.json();
       if (response.ok) {
-        console.log(data.products);
         setCart(data);
       } else {
         console.error("Error fetching cart:", data);
@@ -74,15 +70,17 @@ function CartButton() {
       setToken(tokenFromStorage);
       try {
         const decodedToken = jwtDecode(tokenFromStorage);
-        console.log("Decoded token:", decodedToken);
         setUserId(decodedToken.id);
       } catch (error) {
         console.error("Failed to decode token:", error);
       }
     }
   }, []);
+
   useEffect(() => {
-    fetchCart();
+    if (userId && token) {
+      fetchCart();
+    }
   }, [userId, token]);
 
   const distinctProductCount = cart?.products?.length || 0;
@@ -94,7 +92,7 @@ function CartButton() {
   const totalAmount = Math.max(subTotal + shippingFee - discount, 0);
 
   return (
-    <div className="m-10 h-screen">
+    <div className="m-10 min-h-screen">
       {cart ? (
         <div className="mt-4 flex justify-around gap-10 flex-grow flex-col lg:flex-row">
           <div className="">

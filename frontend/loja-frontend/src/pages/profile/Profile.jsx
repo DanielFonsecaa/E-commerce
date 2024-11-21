@@ -1,53 +1,113 @@
 import { jwtDecode } from "jwt-decode";
 import { useState, useEffect } from "react";
-import LogOutButton from "../../components/logoutButton/LogOutButton";
+import { Link, useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [id, setId] = useState("");
-  const [error, setError] = useState("");
+  const [isError, setIsError] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
 
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
+
+  const toggleCurrentPasswordVisibility = () => {
+    setShowCurrentPassword(!showCurrentPassword);
+  };
+
+  const toggleNewPasswordVisibility = () => {
+    setShowNewPassword(!showNewPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
   const handleToggle = () => {
     setIsChecked(!isChecked);
   };
 
-  //const [value, setValue] = useState("");
-  const token = localStorage.getItem("token");
+  const handlePasswordChange = async () => {
+    setMessage("");
+    setIsError(false);
 
-  const fetchUserInfo = async () => {
-    setError(""); // Clear any previous errors
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setIsError(true);
+      setMessage("All fields are required");
+      setTimeout(() => setMessage(""), 5000);
+      return;
+    }
 
+    if (newPassword.length < 5) {
+      setIsError(true);
+      setMessage("New password must be at least 5 characters long");
+      setTimeout(() => setMessage(""), 5000);
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setIsError(true);
+      setMessage("New password and confirmation do not match");
+      setTimeout(() => setMessage(""), 5000);
+      return;
+    }
     try {
-      const response = await fetch("http://localhost:3000/auth/login", {
-        method: "POST",
+      const token = localStorage.getItem("token"); // Replace with your token logic
+
+      const response = await fetch(`http://localhost:3000/users/${id}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          token: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          email: email,
-          password: password,
+          currentPassword,
+          newPassword,
         }),
       });
-
       if (!response.ok) {
+        const errorDetails = await response.json();
+        setIsError(true);
+        setMessage(errorDetails.message);
+        console.error("Response error details:", errorDetails);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
-      localStorage.setItem("token", data.token);
-      window.location.reload();
-    } catch (err) {
-      console.error("Error during login:", err.message);
-      setError("Login failed. Please check your connection and try again.");
+      console.log("Password updated successfully:", response.data);
+      setMessage("Password updated successfully, You will be logged out");
+      setIsChecked(!isChecked);
+      handleLogout();
+    } catch (error) {
+      console.error("Error updating password:", error.response.data);
+      setMessage("Error changing password");
+    } finally {
+      // Automatically clear the message after 5 seconds
+      setTimeout(() => setMessage(""), 5000);
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+
+    setTimeout(() => {
+      navigate("/login");
+      window.location.reload();
+    }, 5000);
+  };
+
+  const token = localStorage.getItem("token");
+
   const handleEditButton = async (e) => {
     e.preventDefault();
-    setError("");
+    setMessage("");
+    setIsError(false);
 
     try {
       if (!id) throw new Error("User ID is missing.");
@@ -73,10 +133,17 @@ const Profile = () => {
       }
 
       console.log("Update successful");
-      fetchUserInfo();
+      setMessage("Update successful, Login again to update your account");
+      setIsChecked(!isChecked);
+      //----------------------------------------------------------------------------------------------------------------------------------------------
     } catch (err) {
       console.error("Error updating user:", err.message);
-      setError("Update failed. Please try again.");
+      setIsError(!isError);
+      setMessage("Update failed. Please try again.");
+      //setError("Update failed. Please try again.");
+    } finally {
+      // Automatically clear the message after 5 seconds
+      setTimeout(() => setMessage(""), 5000);
     }
   };
 
@@ -89,7 +156,6 @@ const Profile = () => {
         setEmail(decoded.email);
         setPassword(decoded.password);
         setId(decoded.id);
-        console.log("id ---------------", decoded.id);
       } catch (error) {
         console.error("Invalid token:", error);
       }
@@ -97,16 +163,15 @@ const Profile = () => {
   }, []);
 
   return (
-    <div className="w-screen max-w-4xl m-auto h-screen">
-      <div className="w-full mt-20">
+    <div className="w-screen max-w-4xl m-auto min-h-fit">
+      <div className=" m-20">
         <img
           src="https://picsum.photos/400"
           alt="profile picture"
           className=" rounded-full w-32 mb-16 m-auto"
         />
 
-        <div className="max-w-3xl m-auto">
-          <div className="flex justify-end"></div>
+        <div id="start" className="max-w-3xl m-auto">
           <div className="flex items-center justify-end mb-10">
             <input
               className={`mr-2 mt-[0.3rem] h-3.5 w-8 appearance-none rounded-[0.4375rem] 
@@ -133,91 +198,203 @@ const Profile = () => {
               Edit your info
             </label>
           </div>
-          <table className="w-full table-auto">
-            <thead>
-              <tr>
-                <th className="w-1/2 hidden">Options</th>
-                <th className="w-1/4 hidden">Details</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="w-1/2">
-                  <h2 className="font-bold text-2xl p-4">Username</h2>
-                </td>
-                <td className="">
-                  <div className="flex justify-between items-center gap-5">
-                    <input
-                      type="text"
-                      placeholder={username}
-                      name="text"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      required
-                      readOnly={!isChecked}
-                      className="outline-none w-full p-3 bg-gray-100 read-only:bg-gray-300 rounded-lg"
+          <article className="flex flex-grow flex-col gap-3 lg:gap-6">
+            <div className="flex flex-col lg:flex-row justify-between">
+              <h2 className="font-bold lg:text-2xl text-xl pl-2">Username</h2>
+              <div className="flex justify-between items-center gap-3">
+                <input
+                  type="text"
+                  placeholder={username}
+                  name="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  readOnly={!isChecked}
+                  className="outline-none w-full p-3 read-only:bg-gray-300 rounded-lg border-[1px] border-black read-only:border-0"
+                />
+                <div className="w-6"></div>
+              </div>
+            </div>
+
+            <div className="flex flex-col lg:flex-row justify-between">
+              <h2 className="font-bold lg:text-2xl text-xl pl-2">Email</h2>
+              <div className="flex justify-between items-center gap-3">
+                <input
+                  type="text"
+                  placeholder={email}
+                  name="text"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  readOnly={!isChecked}
+                  className="outline-none w-full p-3 read-only:bg-gray-300 rounded-lg border-[1px] border-black read-only:border-0"
+                />
+                <div className="w-6"></div>
+              </div>
+            </div>
+
+            <div
+              className={`${
+                isChecked ? "" : "hidden"
+              } flex flex-col lg:flex-row justify-between`}
+            >
+              <h2 className="font-bold lg:text-2xl text-xl pl-2">
+                Current Password
+              </h2>
+              <div className="flex justify-between items-center gap-3">
+                <input
+                  type={showCurrentPassword ? "text" : "password"}
+                  placeholder="Current password"
+                  name="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  required
+                  className="outline-none w-full p-3 rounded-lg border-[1px] border-black"
+                />
+                <span
+                  onClick={toggleCurrentPasswordVisibility}
+                  className="cursor-pointer"
+                >
+                  {showCurrentPassword ? (
+                    <img
+                      src="src/assets/eye-open.svg"
+                      alt="Show password"
+                      className="w-6"
                     />
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td className="w-1/2">
-                  <h2 className="font-bold text-2xl p-4">Email</h2>
-                </td>
-                <td className="w-1/4">
-                  <div className="flex justify-between items-center gap-5">
-                    <input
-                      type="text"
-                      placeholder={email}
-                      name="text"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      readOnly={!isChecked}
-                      className="outline-none w-full p-3 bg-gray-100 read-only:bg-gray-300 rounded-lg"
+                  ) : (
+                    <img
+                      src="src/assets/eye-closed.svg"
+                      alt="Hide password"
+                      className="w-6"
                     />
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td className="w-1/2">
-                  <h2 className="font-bold text-2xl p-4">Password</h2>
-                </td>
-                <td className="w-1/4">
-                  <div className="flex justify-between items-center gap-5">
-                    <input
-                      type="text"
-                      placeholder={password}
-                      name="text"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      readOnly={!isChecked}
-                      className="outline-none w-full p-3 bg-gray-100 read-only:bg-gray-300 rounded-lg"
+                  )}
+                </span>
+              </div>
+            </div>
+
+            <div
+              className={`${
+                isChecked ? "" : "hidden"
+              } flex flex-col lg:flex-row justify-between`}
+            >
+              <h2 className="font-bold lg:text-2xl text-xl pl-2">
+                New Password
+              </h2>
+              <div className="flex justify-between items-center gap-3">
+                <input
+                  type={showNewPassword ? "text" : "password"}
+                  placeholder="New password"
+                  name="confirmPassword"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                  minLength={5}
+                  className="outline-none w-full p-3 rounded-lg border-[1px] border-black"
+                />
+                <span
+                  onClick={toggleNewPasswordVisibility}
+                  className="cursor-pointer"
+                >
+                  {showNewPassword ? (
+                    <img
+                      src="src/assets/eye-open.svg"
+                      alt="Show password"
+                      className="w-6"
                     />
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          {isChecked && (
-            <div className="flex justify-end mt-4">
+                  ) : (
+                    <img
+                      src="src/assets/eye-closed.svg"
+                      alt="Hide password"
+                      className="w-6"
+                    />
+                  )}
+                </span>
+              </div>
+            </div>
+
+            <div
+              className={`${
+                isChecked ? "" : "hidden"
+              } flex flex-col lg:flex-row justify-between`}
+            >
+              <h2 className="font-bold lg:text-2xl text-xl pl-2">
+                Confirm Password
+              </h2>
+              <div className="flex justify-between items-center gap-3">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Confirm new password"
+                  name="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  minLength={5}
+                  className="outline-none w-full p-3 rounded-lg border-[1px] border-black"
+                />
+                <span
+                  onClick={toggleConfirmPasswordVisibility}
+                  className="cursor-pointer"
+                >
+                  {showConfirmPassword ? (
+                    <img
+                      src="src/assets/eye-open.svg"
+                      alt="Show password"
+                      className="w-6"
+                    />
+                  ) : (
+                    <img
+                      src="src/assets/eye-closed.svg"
+                      alt="Hide password"
+                      className="w-6"
+                    />
+                  )}
+                </span>
+              </div>
+            </div>
+          </article>
+          {message && (
+            <div
+              className={`${
+                isError ? "bg-red-600" : "bg-green-600"
+              } relative w-full text-center text-xl tracking-wider pl-2 rounded-xl mt-5`}
+            >
               <button
-                onClick={handleEditButton}
-                className="uppercase p-3 rounded-lg tracking-wider bg-black text-white"
+                className="absolute top-2 right-3 text-white text-3xl font-bold size-9 cursor-pointer"
+                onClick={() => setMessage("")}
               >
-                confirm change
+                &times;
               </button>
+
+              <p>{message}</p>
+            </div>
+          )}
+          {isChecked && (
+            <div className="flex justify-end mt-4 gap-3 text-white">
+              <Link
+                to="#start"
+                onClick={handlePasswordChange}
+                className="p-3 rounded-lg bg-black uppercase tracking-widest"
+              >
+                confirm password
+              </Link>
+              <Link
+                to="#start"
+                onClick={handleEditButton}
+                className="p-3 rounded-lg bg-black uppercase tracking-widest"
+              >
+                confirm name
+              </Link>
             </div>
           )}
         </div>
-        {error && (
-          <p className="bg-red-600 w-full text-center text-xl tracking-wider p-4 rounded-xl mt-5">
-            {error}
-          </p>
-        )}
+
         <div className="flex justify-end max-w-3xl m-auto mt-5">
-          <LogOutButton />
+          <button
+            onClick={handleLogout}
+            className="p-4 bg-black text-white rounded-lg  tracking-widest"
+          >
+            LogOut
+          </button>
         </div>
       </div>
     </div>

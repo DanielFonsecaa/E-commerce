@@ -210,6 +210,7 @@ router.post("/login", async (req, res) => {
     );
     const orignalPassword = hashPassword.toString(CryptoJS.enc.Utf8);
     if (orignalPassword !== req.body.password) {
+      console.log(orignalPassword, req.body.password);
       return res.status(401).json("Wrong credentials");
     }
 

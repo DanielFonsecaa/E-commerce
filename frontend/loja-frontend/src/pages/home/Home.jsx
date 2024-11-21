@@ -4,10 +4,14 @@ import NavBar from "../../components/navbar/Navbar.jsx";
 import Footer from "../../components/footer/Footer.jsx";
 function Home() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col m-0 min-h-screen">
       <NavBar />
-      <Outlet />
-      <Footer />
+      <div className="flex-1">
+        <Outlet />
+      </div>
+      <div className="h-full">
+        <Footer />
+      </div>
     </div>
   );
 }

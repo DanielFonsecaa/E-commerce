@@ -5,7 +5,12 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,28 +52,49 @@ function Login() {
 
         <div className="flex flex-col ">
           <form action="POST">
-            <div className="my-3">
-              <input
-                type="email"
-                placeholder="email"
-                name="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="outline-none rounded-xl p-3 w-full"
-              />
-              <p>{email}</p>
-              <br />
-              <input
-                type="text"
-                name="password"
-                placeholder="*********"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="outline-none rounded-xl p-3 w-full"
-              />
-              <p>{password}</p>
+            <div className="flex flex-col gap-5 my-3">
+              <div className="flex justify-between items-center gap-3">
+                <input
+                  type="email"
+                  placeholder="email"
+                  name="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="outline-none rounded-xl p-3 w-full"
+                />
+                <div className="w-6"></div>
+              </div>
+
+              <div className="flex justify-between items-center gap-3">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="*********"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="outline-none rounded-xl p-3 w-full"
+                />
+                <span
+                  onClick={togglePasswordVisibility}
+                  className="cursor-pointer"
+                >
+                  {showPassword ? (
+                    <img
+                      src="src/assets/eye-open.svg"
+                      alt="Show password"
+                      className="w-6"
+                    />
+                  ) : (
+                    <img
+                      src="src/assets/eye-closed.svg"
+                      alt="Hide password"
+                      className="w-6"
+                    />
+                  )}
+                </span>
+              </div>
             </div>
             <button
               onClick={handleSubmit}

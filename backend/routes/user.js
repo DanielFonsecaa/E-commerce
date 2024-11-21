@@ -324,11 +324,36 @@ router.get("/:id", verifyTokenAdmin, async (req, res) => {
 
 router.put("/:id", verifyTokenAuthorization, async (req, res) => {
   try {
-    if (req.body.password) {
+    const userId = req.params.id;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (req.body.currentPassword && req.body.newPassword) {
+      // Decrypt the stored password and compare it with the provided current password
+      const decryptedPassword = CryptoJS.AES.decrypt(
+        user.password,
+        process.env.SECRET_KEY
+      ).toString(CryptoJS.enc.Utf8);
+
+      if (decryptedPassword !== req.body.currentPassword) {
+        return res
+          .status(401)
+          .json({ message: "Current password is incorrect" });
+      }
+
+      // Encrypt the new password
       req.body.password = CryptoJS.AES.encrypt(
-        req.body.password,
+        req.body.newPassword,
         process.env.SECRET_KEY
       ).toString();
+
+      // Remove `currentPassword` and `newPassword` from the request body
+      delete req.body.currentPassword;
+      delete req.body.newPassword;
     }
 
     const updateUser = await User.findByIdAndUpdate(
