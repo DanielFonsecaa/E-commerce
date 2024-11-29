@@ -1,16 +1,20 @@
 <br/>
 <div align="center">
-<img src="https://github.com/user-attachments/assets/9b53da4b-cd74-4a0f-8df5-55e2f4960f8a" alt="Logo" width=300>
+  <h3 align="center">Under Construction</h3>
 
-<h3 align="center">E-Commerce By Daniel</h3>
-<p align="center">
-Enhancing Your Mobile Experience, One Accessory at a Time.
+  <img src="https://github.com/user-attachments/assets/13f2d65c-9efe-4143-a5d7-e5b039b21c02" alt="page under cuntruction" width=400>
+  <br/>
+  <br/>
+  <br/>
+  <img src="https://github.com/user-attachments/assets/9b53da4b-cd74-4a0f-8df5-55e2f4960f8a" alt="Logo" width=300>
 
 
+  <h3 align="center">E-Commerce By Daniel</h3>
+
+  <p align="center">
+  Enhancing Your Mobile Experience, One Accessory at a Time.
+  </p>
   
-
-
-</p>
 </div>
 
 # About The Project
