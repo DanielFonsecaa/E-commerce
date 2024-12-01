@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import BuyButton from "../../components/buyButton/BuyButton.jsx";
 import { jwtDecode } from "jwt-decode";
+
+import AddProduct from "../../components/AddProduct.jsx";
+
 function Product() {
   const [products, setProducts] = useState([]);
   const [selectedColors, setSelectedColors] = useState({}); // Track colors for each product
   const [userId, setUserId] = useState("");
   const [token, setToken] = useState(null);
+  const [adminStatus, setAdminStatus] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const handleColorChange = (productId, event) => {
     const color = event.target.value;
@@ -29,12 +34,21 @@ function Product() {
     }
   };
 
+  const toggleForm = async () => {
+    if (adminStatus === true) {
+      setIsFormOpen(!isFormOpen);
+      return;
+    }
+    console.log("not admin");
+  };
+
   useEffect(() => {
     setToken(localStorage.getItem("token"));
     if (token) {
       try {
         const decodedToken = jwtDecode(token);
-        setUserId(decodedToken.id); // Set user ID if token is valid
+        if (decodedToken.isAdmin) setAdminStatus(true);
+        setUserId(decodedToken.id);
       } catch (error) {
         console.error("Invalid token:", error);
       }
@@ -55,7 +69,14 @@ function Product() {
 
   return (
     <div className="h-screen">
-      <div className="product-container">
+      <div className="">
+        <button onClick={toggleForm}> Add product</button>
+
+        <div className={` ${isFormOpen ? "block" : "hidden"} `}>
+          <AddProduct />
+        </div>
+      </div>
+      <div className={` ${isFormOpen ? "hidden" : "block"}`}>
         {products.map((product) => (
           <div key={product._id} className="product-card">
             <h1 className="product-title">

@@ -9,6 +9,7 @@ const productSchema = new mongoose.Schema(
     model: { type: String },
     color: { type: Array },
     price: { type: Number, required: true },
+    quantity: { type: Number, default: 1 },
   },
   { timestamps: true }
 );

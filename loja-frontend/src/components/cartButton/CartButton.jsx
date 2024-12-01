@@ -70,6 +70,7 @@ function CartButton() {
       setToken(tokenFromStorage);
       try {
         const decodedToken = jwtDecode(tokenFromStorage);
+        console.log("token---------------", decodedToken);
         setUserId(decodedToken.id);
       } catch (error) {
         console.error("Failed to decode token:", error);
