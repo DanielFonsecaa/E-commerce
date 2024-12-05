@@ -43,6 +43,7 @@ mongoose
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.log(err));
 
+app.use("/", product);
 app.use("/users", user);
 app.use("/auth", auth);
 app.use("/products", product);

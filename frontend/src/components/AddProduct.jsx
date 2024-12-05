@@ -7,8 +7,9 @@ const AddProduct = () => {
   const [model, setModel] = useState("");
   const [color, setColor] = useState("");
   const [price, setPrice] = useState(0);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(0);
   const [message, setMessage] = useState("");
+  const api = import.meta.env.VITE_API_URL;
 
   const token = localStorage.getItem("token");
 
@@ -21,7 +22,7 @@ const AddProduct = () => {
       return;
     }
     try {
-      const response = await fetch("http://localhost:3000/products", {
+      const response = await fetch(`${api}/products`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

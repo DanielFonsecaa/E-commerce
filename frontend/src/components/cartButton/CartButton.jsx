@@ -6,6 +6,7 @@ function CartButton() {
   const [token, setToken] = useState(null);
   const [country, setCountry] = useState("");
   const [shippingFee, setShippingFee] = useState(0.0);
+  const api = import.meta.env.VITE_API_URL;
 
   const [coupon, setCoupon] = useState(""); //....................................................
   const [discount, setDiscount] = useState(0);
@@ -45,7 +46,7 @@ function CartButton() {
     if (!userId || !token) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/cart/${userId}`, {
+      const response = await fetch(`${api}/cart/${userId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

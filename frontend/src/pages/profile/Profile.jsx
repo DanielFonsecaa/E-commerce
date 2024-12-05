@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const Profile = () => {
+  const api = import.meta.env.VITE_API_URL;
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -61,7 +63,7 @@ const Profile = () => {
     try {
       const token = localStorage.getItem("token"); // Replace with your token logic
 
-      const response = await fetch(`http://localhost:3000/users/${id}`, {
+      const response = await fetch(`${api}/users/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -113,7 +115,7 @@ const Profile = () => {
       if (!id) throw new Error("User ID is missing.");
       if (!username || !email) throw new Error("Invalid input data.");
 
-      const response = await fetch(`http://localhost:3000/users/${id}`, {
+      const response = await fetch(`${api}/users/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -60,18 +60,34 @@ router.get("/find/:id", async (req, res) => {
 router.get("/", async (req, res) => {
   const qNew = req.query.new;
   const qBrand = req.query.brand;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
   try {
     let products;
+    const skip = (page - 1) * limit;
 
     if (qNew) {
-      products = await Product.find().sort({ createAt: -1 }).limit(1);
+      products = await Product.find()
+        .sort({ createAt: -1 })
+        .limit(limit)
+        .skip(skip);
     } else if (qBrand) {
-      products = await Product.find({ brand: qBrand });
+      products = await Product.find({ brand: qBrand }).limit(limit).skip(skip);
     } else {
-      products = await Product.find();
+      products = await Product.find().limit(limit).skip(skip);
     }
 
-    res.status(200).json(products);
+    const totalProducts = await Product.countDocuments();
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    res.status(200).json({
+      products,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalProducts,
+      },
+    });
   } catch (error) {
     res.status(500).json({ message: "Error deleting product" });
   }

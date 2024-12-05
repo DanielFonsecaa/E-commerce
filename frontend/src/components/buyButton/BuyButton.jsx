@@ -4,6 +4,8 @@ import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 
 const BuyButton = ({ productId, price, color, title, img, model }) => {
+  const api = import.meta.env.VITE_API_URL;
+
   const [userCart, setUserCart] = useState(null);
   const [userId, setUserId] = useState(null);
   const [token, setToken] = useState(null);
@@ -19,7 +21,7 @@ const BuyButton = ({ productId, price, color, title, img, model }) => {
       if (!userId || !token) return; // Ensure user is authenticated
 
       try {
-        const response = await fetch(`http://localhost:3000/cart/${userId}`, {
+        const response = await fetch(`${api}/cart/${userId}`, {
           headers: {
             token: `Bearer ${token}`,
           },
@@ -51,17 +53,14 @@ const BuyButton = ({ productId, price, color, title, img, model }) => {
 
     async function fetchCart(cart) {
       try {
-        const response = await fetch(
-          `http://localhost:3000/cart/${userCart._id}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              token: `Bearer ${token}`,
-            },
-            body: JSON.stringify(cart),
-          }
-        );
+        const response = await fetch(`${api}/cart/${userCart._id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            token: `Bearer ${token}`,
+          },
+          body: JSON.stringify(cart),
+        });
 
         if (response.ok) {
           const updatedCartData = await response.json();
@@ -115,7 +114,7 @@ const BuyButton = ({ productId, price, color, title, img, model }) => {
       };
 
       try {
-        const response = await fetch("http://localhost:3000/cart", {
+        const response = await fetch(`${api}/cart`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -140,8 +139,12 @@ const BuyButton = ({ productId, price, color, title, img, model }) => {
   }
 
   return (
-    <button onClick={handleBuyProduct} disabled={!color}>
-      Buy Now
+    <button
+      className="capitalize border-2 border-orange-500 text-orange-500 block w-full px-1 py-2 mt-2 text-2xl cursor-pointer cursor disabled:cursor-not-allowed"
+      onClick={handleBuyProduct}
+      disabled={!color}
+    >
+      add to cart
     </button>
   );
 };

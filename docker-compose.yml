@@ -1,0 +1,45 @@
+services:
+  frontend:
+    build:
+      context: ./frontend  # The path to the frontend directory
+      dockerfile: dockerfile.dev  # You can change this to Dockerfile.prod when needed
+    ports:
+      - "5173:5173"  # Frontend port, update if necessary
+    depends_on:
+      - backend
+    container_name: frontend
+    networks:
+      - app-network
+    environment:
+      - VITE_API_URL=http://localhost:3000
+
+  backend:
+    build:
+      context: ./backend  # Path to your backend directory
+    ports:
+      - "3000:3000"  # Backend port
+    environment:
+      - MONGO_URL=mongodb+srv://daniruxx:5MDbwtBiV46id0A3@capas.3cxzx.mongodb.net/Capas?retryWrites=true&w=majority&appName=Capas
+    depends_on:
+      - mongodb
+    container_name: backend
+    networks:
+      - app-network
+ 
+  
+  mongodb:
+    image: mongo:latest  # MongoDB image
+    ports:
+      - "27016:27017"  # Expose MongoDB port
+    volumes:
+      - mongodb_data:/data/db  # Persistent MongoDB storage
+    networks:
+      - app-network
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge

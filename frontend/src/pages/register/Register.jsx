@@ -8,6 +8,8 @@ function Register() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  const api = import.meta.env.VITE_API_URL;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(""); // Clear any previous errors
@@ -18,7 +20,7 @@ function Register() {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/auth/register", {
+      const response = await fetch(`${api}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
